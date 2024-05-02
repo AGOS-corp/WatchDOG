@@ -1,0 +1,14 @@
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\bin\Debug\AgosWatchdog.exe.config
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\bin\Debug\AgosWatchdog.exe
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\bin\Debug\AgosWatchdog.pdb
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.csproj.AssemblyReference.cache
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.Properties.Resources.resources
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.csproj.GenerateResource.cache
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.csproj.CoreCompileInputs.cache
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.exe
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.pdb
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.MainForm.resources
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatchdog.AddProcessForm.resources
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\bin\Debug\Newtonsoft.Json.dll
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\bin\Debug\Newtonsoft.Json.xml
+C:\Users\김응기\Documents\SourceCode\2024\AgosWatchdog\AgosWatchdog\obj\Debug\AgosWatc.C6FE640F.Up2Date
