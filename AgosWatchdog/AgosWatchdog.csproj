@@ -129,5 +129,8 @@
   <ItemGroup>
     <None Include="Resources\AgosLogo333_76.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include=".gitignore" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
