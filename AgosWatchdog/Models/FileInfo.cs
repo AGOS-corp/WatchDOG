@@ -8,7 +8,7 @@ namespace AgosWatchdog
         public string FileName { get; set; } //파일 실제 이름
         public string NickName { get; set; } //해당 프로그램 내에서만 사용할 이름
         public string Path { get; set; } //프로그램 경로
-        
+        public bool Pause { get; set; }
         public bool StartType { get; set; } //프로세스 등록 후 바로 시작 여부
         public bool Status { get; set; } //현재 프로세스 상태
         public bool IsAutoReStart { get; set; } //프로그램 자동 재시작
