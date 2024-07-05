@@ -9,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Management;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +20,22 @@ namespace AgosWatchdog
 {
     public partial class MainForm : Form
     {
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool FreeLibrary(IntPtr hModule);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr GetModuleHandle(string lpModuleName);
+
+        private static void ReleaseDll(string dllName)
+        {
+            IntPtr hModule = GetModuleHandle(dllName);
+            if (hModule != IntPtr.Zero)
+            {
+                FreeLibrary(hModule);
+            }
+        }
+
+
         private AddProcessForm _processForm;
         private static readonly object lockObject = new object();
         private Dictionary<string, ListViewItem> listViewItems = new Dictionary<string, ListViewItem>();
@@ -283,6 +300,8 @@ namespace AgosWatchdog
             {
                 Process process = Process.GetProcessById(processID);
                 process.Kill();
+
+                process.WaitForExit();
             }
             catch (Exception ex)
             {

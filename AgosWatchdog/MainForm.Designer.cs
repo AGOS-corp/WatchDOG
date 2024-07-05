@@ -1,4 +1,7 @@
-﻿namespace AgosWatchdog
+﻿using System;
+using System.Runtime.InteropServices;
+
+namespace AgosWatchdog
 {
     partial class MainForm
     {
