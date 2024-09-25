@@ -5,12 +5,14 @@
                 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
                 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
                 
+                /.idea/*
                 .vs/
-                .idea/
+                /AgosWatchdog
                 
                 
-                .vs/AgosWatchdog/
-                .idea/.idea.AgosWatchdog/            
+                /.vs/AgosWatchdog/*
+                /.idea/.idea.AgosWatchdog/            
+
                
                 packages/
                 
@@ -491,3 +493,10 @@
                 # Additional files built by Visual Studio
                 
                 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,rider
+
+                             
+/.idea/.idea.AgosWatchdog/.idea
+/.vs/AgosWatchdog/FileContentIndex
+/AgosWatchdog
+/.vs/slnx.sqlite
+/.vs/AgosWatchdog/FileContentIndex/306ccbff-20f1-4b7c-9851-eb590daf9c90.vsidx
