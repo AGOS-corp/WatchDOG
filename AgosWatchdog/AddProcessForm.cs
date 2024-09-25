@@ -56,7 +56,7 @@ namespace AgosWatchdog
                 //File경로
                 string filePath = fileFullName.Replace(fileName, "");
 
-                fileInfo = new FileInfo() { FileName = fileName, FileFullName = fileFullName,Path = filePath, Status = false };
+                fileInfo = new FileInfo() { FileName = fileName, FileFullName = fileFullName,Path = filePath, State = ProcState.terminated};
                 tb_nickName.Text = fileName;
                 tb_path.Text = filePath;
                 
