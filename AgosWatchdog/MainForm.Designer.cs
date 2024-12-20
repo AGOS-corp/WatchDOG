@@ -33,7 +33,7 @@ namespace AgosWatchdog
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
+            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("");
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
@@ -51,6 +51,7 @@ namespace AgosWatchdog
             this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tooltip_delete = new System.Windows.Forms.ToolStripMenuItem();
             this.tooltip_preference = new System.Windows.Forms.ToolStripMenuItem();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -97,6 +98,7 @@ namespace AgosWatchdog
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.Btn_AddProcess, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.ProcessListView, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 2, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -133,7 +135,7 @@ namespace AgosWatchdog
             this.ProcessListView.FullRowSelect = true;
             this.ProcessListView.HideSelection = false;
             this.ProcessListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem3});
             this.ProcessListView.Location = new System.Drawing.Point(3, 32);
             this.ProcessListView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ProcessListView.Name = "ProcessListView";
@@ -157,7 +159,7 @@ namespace AgosWatchdog
             // statusHeader
             // 
             this.statusHeader.Text = "상태";
-            this.statusHeader.Width = 99;
+            this.statusHeader.Width = 170;
             // 
             // descriptHeader
             // 
@@ -207,6 +209,18 @@ namespace AgosWatchdog
             this.tooltip_preference.Text = "설정";
             this.tooltip_preference.Click += new System.EventHandler(this.tooltip_preference_Click);
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(669, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(146, 30);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "label2";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -248,6 +262,7 @@ namespace AgosWatchdog
         private System.Windows.Forms.ToolStripMenuItem tooltip_delete;
         private System.Windows.Forms.ToolStripMenuItem 정지ToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader pidHeader;
+        private System.Windows.Forms.Label label2;
     }
 }
 
