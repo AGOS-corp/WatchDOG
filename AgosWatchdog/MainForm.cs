@@ -217,12 +217,14 @@ namespace AgosWatchdog
             using (ManagementObjectSearcher oWMI = new ManagementObjectSearcher(strWMIQry))
             {
                 while (this.mIsThreadRunning)
-                {
+                {                    
                     lock (lockObject)
                     {
-                        oWMICollection = oWMI.Get(); // WMI 쿼리 결과 가져오기
-                    }
-
+                        var before = DateTime.Now;
+                        oWMICollection = oWMI.Get(); // WMI 쿼리 결과 가져오기                                                
+                        var diff = DateTime.Now - before;
+                        Console.WriteLine(diff.TotalMilliseconds);
+                    }                   
                     // 파일 정보 리스트 순회
                     foreach (var fileInfo in GlobalData.fileInfoList)
                     {
@@ -458,6 +460,7 @@ namespace AgosWatchdog
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            this.Text = "프로그램 종료 중...";
             stopThreadChkProc();
         }
     }
