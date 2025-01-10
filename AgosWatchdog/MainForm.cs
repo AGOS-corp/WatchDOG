@@ -48,6 +48,7 @@ namespace AgosWatchdog
         public MainForm()
         {
             InitializeComponent();
+            // this.WindowState = FormWindowState.Minimized; 시작시  최소화 
             var assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetName().Version.ToString();
             this.label2.Text = version;
@@ -71,10 +72,8 @@ namespace AgosWatchdog
                 ListViewItem item = new ListViewItem(listViewArr);
 
                 ProcessListView.Items.Add(item); //ListView에 업데이트
-                // item.Tag = process.ProcessID;
                 listViewItems.Add(process.FileName, item);
 
-                // ConfigProcess.WriteJson(GlobalData.fileInfoList); //Config에 현재 관리되는 Process정보 저장해주기.    
             }
         }
 
@@ -230,11 +229,10 @@ namespace AgosWatchdog
                     {
                         fileInfo.State = CheckRunProcessForFileInfo(oWMICollection, fileInfo.ProcessID);
 
-                        if (listViewItems.ContainsKey(fileInfo.FileName))
+                        if (listViewItems.TryGetValue(fileInfo.FileName, out var item))
                         {
-                            this.Invoke(new MethodInvoker(() =>
+                            Invoke(new MethodInvoker(() =>
                             {
-                                ListViewItem item = listViewItems[fileInfo.FileName];
                                 item.SubItems[0].Text = fileInfo.NickName;
                                 item.SubItems[2].Text = EnumHelper.ToDescription(fileInfo.State);
                                 item.SubItems[3].Text = fileInfo.Description;
