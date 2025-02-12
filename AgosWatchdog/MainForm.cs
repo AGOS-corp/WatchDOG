@@ -38,12 +38,14 @@ namespace AgosWatchdog
             }
         }
 
-        private ManagementObjectCollection oWMICollection;
+        //private ManagementObjectCollection oWMICollection;
         private AddProcessForm _processForm;
-        private static readonly object lockObject = new object();
+        //private static readonly object lockObject = new object();
         private Dictionary<string, ListViewItem> listViewItems = new Dictionary<string, ListViewItem>();
         private Thread mThreadCheckProcess = null;
         private bool mIsThreadRunning = true;
+
+        private System.Windows.Forms.Timer mTimer = null;
 
         public MainForm()
         {
@@ -51,7 +53,7 @@ namespace AgosWatchdog
             // this.WindowState = FormWindowState.Minimized; 시작시  최소화 
             var assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetName().Version.ToString();
-            this.label2.Text = version;
+            this.label2.Text = $"ver. {version}";
 
             GlobalData.fileInfoList = new List<FileInfo>();
             ConfigProcess.ReadJson();
@@ -60,6 +62,13 @@ namespace AgosWatchdog
             UpdateProcessFromConfig();
 
             startThreadChkProc();
+
+            if (mTimer == null) {
+                mTimer = new System.Windows.Forms.Timer();
+                mTimer.Interval = 1000;
+                mTimer.Tick += new EventHandler(onRunTimer);
+                mTimer.Start();
+            }
         }
 
 
@@ -165,10 +174,12 @@ namespace AgosWatchdog
             {
                 ProcState state = ProcState.terminated;
                 Process process = null;
+                bool isFound = false;
                 if (processID > 0)
                 {
                     foreach (ManagementObject oItem in searcher)
                     {
+                        isFound = false;
                         if (Convert.ToInt32(oItem.GetPropertyValue("ProcessID")) == processID)
                         {
                             state = ProcState.running;
@@ -176,9 +187,15 @@ namespace AgosWatchdog
                             if (process != null && IsHungAppWindow(process.MainWindowHandle))
                             {
                                 state = ProcState.hang;
-                            }
+                            }                            
+                            isFound = true;
+                        }
+                        oItem.Dispose();
+
+                        if (isFound) {
                             break;
                         }
+                        
                     }
                 }
                 return state;
@@ -216,19 +233,40 @@ namespace AgosWatchdog
             using (ManagementObjectSearcher oWMI = new ManagementObjectSearcher(strWMIQry))
             {
                 while (this.mIsThreadRunning)
-                {                    
+                {
+                    /*
                     lock (lockObject)
                     {
-                        var before = DateTime.Now;
+                        //var before = DateTime.Now;
+
                         oWMICollection = oWMI.Get(); // WMI 쿼리 결과 가져오기                                                
-                        var diff = DateTime.Now - before;
-                        Console.WriteLine(diff.TotalMilliseconds);
+                        //var diff = DateTime.Now - before;
+                        //Console.WriteLine(diff.TotalMilliseconds);
                     }                   
-                    // 파일 정보 리스트 순회
+                    */                    
+                    using (ManagementObjectCollection moc = oWMI.Get()) {
+                        // 파일 정보 리스트 순회                    
+                        foreach (var fileInfo in GlobalData.fileInfoList)
+                        {   
+                            fileInfo.State = CheckRunProcessForFileInfo(moc, fileInfo.ProcessID);
+                            // 재시작 로직
+                            if (fileInfo.IsAutoReStart && fileInfo.State != ProcState.running && !fileInfo.Pause)
+                            {
+                                if (fileInfo.State == ProcState.hang)
+                                {
+                                    StopProcess(fileInfo.ProcessID);
+                                }
+                                if (!CheckSameProcess(fileInfo.FileName))
+                                {
+                                    StartProcess(fileInfo);
+                                }
+                            }
+                        }
+                    }
+                    // view - ManagementObjectCollection using > foreach 에서 하면 빈번하게 종료안되는 이슈 발생함.
+                    /*
                     foreach (var fileInfo in GlobalData.fileInfoList)
                     {
-                        fileInfo.State = CheckRunProcessForFileInfo(oWMICollection, fileInfo.ProcessID);
-
                         if (listViewItems.TryGetValue(fileInfo.FileName, out var item))
                         {
                             Invoke(new MethodInvoker(() =>
@@ -239,22 +277,25 @@ namespace AgosWatchdog
                                 item.SubItems[4].Text = fileInfo.LastRunTime.ToString();
                             }));
                         }
-
-                        // 재시작 로직
-                        if (fileInfo.IsAutoReStart && fileInfo.State != ProcState.running && !fileInfo.Pause)
-                        {
-                            if (fileInfo.State == ProcState.hang)
-                            {
-                                StopProcess(fileInfo.ProcessID);
-                            }
-                            if (!CheckSameProcess(fileInfo.FileName))
-                            {
-                                StartProcess(fileInfo);
-                            }
-                        }
                     }
-                    // 쿼리 주기 조정: 3초나 5초로 증가
-                    Thread.Sleep(5000);
+                    */
+                    Thread.Sleep(1000);
+                }
+            }
+        }
+
+        public void onRunTimer(Object obj, EventArgs e) {
+            viewStatus();
+        }
+        private void viewStatus() {
+            foreach (var fileInfo in GlobalData.fileInfoList)
+            {
+                if (listViewItems.TryGetValue(fileInfo.FileName, out var item))
+                {
+                    item.SubItems[0].Text = fileInfo.NickName;
+                    item.SubItems[2].Text = EnumHelper.ToDescription(fileInfo.State);
+                    item.SubItems[3].Text = fileInfo.Description;
+                    item.SubItems[4].Text = fileInfo.LastRunTime.ToString();
                 }
             }
         }
@@ -312,11 +353,13 @@ namespace AgosWatchdog
                         GlobalData.fileInfoList[idx].Pause = false;
 
                         //ListView에 업데이트.
+                        /*
                         this.Invoke(new MethodInvoker(() =>
                         {
                             ProcessListView.Items[idx + 1].SubItems[1].Text = process.Id.ToString();
                             ProcessListView.Items[idx + 1].SubItems[2].Text = "OWI 에서 상태 동기화 중...";
                         }));
+                        */
 
                         ConfigProcess.WriteJson(GlobalData.fileInfoList); //Config에 현재 관리되는 Process정보 저장해주기.
                     }
@@ -392,10 +435,12 @@ namespace AgosWatchdog
                 {
                     GlobalData.fileInfoList[idx - 1].Pause = true; //프로그램 내에서 정지를 할경우 다시 시작 하지 않게 처리!
                     StopProcess(Convert.ToInt32(ProcessListView.Items[idx].SubItems[1].Text));
+                    /*
                     this.Invoke(new MethodInvoker(() =>
                     {
                         ProcessListView.Items[idx].SubItems[2].Text = "OWI 에서 상태 동기화 중...";
                     }));
+                    */
                 }
             } //ListView에서 삭제
         }
@@ -458,6 +503,7 @@ namespace AgosWatchdog
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            mTimer.Stop();
             this.Text = "프로그램 종료 중...";
             stopThreadChkProc();
         }

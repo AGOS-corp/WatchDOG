@@ -33,7 +33,7 @@ namespace AgosWatchdog
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.ListViewItem listViewItem3 = new System.Windows.Forms.ListViewItem("");
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
@@ -135,7 +135,7 @@ namespace AgosWatchdog
             this.ProcessListView.FullRowSelect = true;
             this.ProcessListView.HideSelection = false;
             this.ProcessListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem3});
+            listViewItem1});
             this.ProcessListView.Location = new System.Drawing.Point(3, 32);
             this.ProcessListView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ProcessListView.Name = "ProcessListView";
@@ -232,6 +232,7 @@ namespace AgosWatchdog
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "MainForm";
             this.Text = "Agos WatchDog";
+            this.WindowState = System.Windows.Forms.FormWindowState.Minimized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
