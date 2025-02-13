@@ -50,7 +50,6 @@ namespace AgosWatchdog
         public MainForm()
         {
             InitializeComponent();
-            // this.WindowState = FormWindowState.Minimized; 시작시  최소화 
             var assembly = Assembly.GetExecutingAssembly();
             var version = assembly.GetName().Version.ToString();
             this.label2.Text = $"ver. {version}";
@@ -172,27 +171,32 @@ namespace AgosWatchdog
             return isDuplicated;
         }
 
-        private ProcState CheckRunProcessForFileInfo(ManagementObjectCollection searcher, int processID)
+        //private ProcState CheckRunProcessForFileInfo(ManagementObjectCollection searcher, int processID)
+        private void CheckRunProcessForFileInfo(ManagementObjectCollection searcher, ref FileInfo f)
         {
             try
             {
                 ProcState state = ProcState.terminated;
                 Process process = null;
                 bool isFound = false;
-                if (processID > 0)
+                if (f.FileName != null && !f.FileName.Trim().Equals(""))
                 {
                     foreach (ManagementObject oItem in searcher)
                     {
                         isFound = false;
-                        if (Convert.ToInt32(oItem.GetPropertyValue("ProcessID")) == processID)
+                        //if (Convert.ToInt32(oItem.GetPropertyValue("ProcessID")) == processID)
+                        if (oItem.GetPropertyValue("Name").ToString().Equals(f.FileName))
                         {
-                            state = ProcState.running;
-                            process = Process.GetProcessById(processID);
-                            if (process != null && IsHungAppWindow(process.MainWindowHandle))
-                            {
-                                state = ProcState.hang;
-                            }                            
-                            isFound = true;
+                            f.ProcessID = Convert.ToInt32(oItem.GetPropertyValue("ProcessId").ToString());
+                            if (f.ProcessID > 0) {
+                                state = ProcState.running;
+                                process = Process.GetProcessById(f.ProcessID);
+                                if (process != null && IsHungAppWindow(process.MainWindowHandle))
+                                {
+                                    state = ProcState.hang;
+                                }
+                                isFound = true;
+                            }
                         }
                         oItem.Dispose();
 
@@ -202,18 +206,18 @@ namespace AgosWatchdog
                         
                     }
                 }
-                return state;
+                f.State = state;
             }
             catch (ManagementException e)
             {
                 Console.WriteLine(e.ToString());
                 MessageBox.Show(e.ToString());
-                return ProcState.terminated;
+                //return ProcState.terminated;
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
-                return ProcState.terminated;
+                //return ProcState.terminated;
             }
         }
         private void startThreadChkProc()
@@ -247,12 +251,14 @@ namespace AgosWatchdog
                         //var diff = DateTime.Now - before;
                         //Console.WriteLine(diff.TotalMilliseconds);
                     }                   
-                    */                    
+                    */ 
                     using (ManagementObjectCollection moc = mos.Get()) {
                         // 파일 정보 리스트 순회                    
+                        FileInfo f = null;
                         foreach (var fileInfo in GlobalData.fileInfoList)
-                        {   
-                            fileInfo.State = CheckRunProcessForFileInfo(moc, fileInfo.ProcessID);
+                        {
+                            f = fileInfo;
+                            CheckRunProcessForFileInfo(moc, ref f);
                             // 재시작 로직
                             if (fileInfo.IsAutoReStart && fileInfo.State != ProcState.running && !fileInfo.Pause)
                             {
@@ -297,6 +303,7 @@ namespace AgosWatchdog
                 if (listViewItems.TryGetValue(fileInfo.FileName, out var item))
                 {
                     item.SubItems[0].Text = fileInfo.NickName;
+                    item.SubItems[1].Text = fileInfo.ProcessID.ToString();
                     item.SubItems[2].Text = EnumHelper.ToDescription(fileInfo.State);
                     item.SubItems[3].Text = fileInfo.Description;
                     item.SubItems[4].Text = fileInfo.LastRunTime.ToString();
