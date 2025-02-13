@@ -154,18 +154,22 @@ namespace AgosWatchdog
         private bool CheckSameProcess(string fileName)
         {
             string strWMIQry = "Select * From Win32_Process";
+            bool isDuplicated = false;
 
-            ManagementObjectSearcher oWMI = new ManagementObjectSearcher(strWMIQry);
-            foreach (ManagementObject oItem in oWMI.Get())
-            {
-                Debug.WriteLine(oItem.GetPropertyValue("Name").ToString());
-                if (oItem.GetPropertyValue("Name").ToString() == fileName)
+            using (ManagementObjectSearcher mos = new ManagementObjectSearcher(strWMIQry)) {
+                foreach (ManagementObject mObj in mos.Get())
                 {
-                    Debug.WriteLine("중복 process 동작 중...(1)");
-                    return true;
+                    Debug.WriteLine(mObj.GetPropertyValue("Name").ToString());
+                    if (mObj.GetPropertyValue("Name").ToString() == fileName)
+                    {
+                        Debug.WriteLine("중복 process 동작 중...(1)");
+                        isDuplicated = true;
+                    }
+                    mObj.Dispose();
+                    if (isDuplicated) break;
                 }
             }
-            return false;
+            return isDuplicated;
         }
 
         private ProcState CheckRunProcessForFileInfo(ManagementObjectCollection searcher, int processID)
@@ -230,7 +234,7 @@ namespace AgosWatchdog
         private void CheckProcess()
         {
             string strWMIQry = "Select * From Win32_Process";
-            using (ManagementObjectSearcher oWMI = new ManagementObjectSearcher(strWMIQry))
+            using (ManagementObjectSearcher mos = new ManagementObjectSearcher(strWMIQry))
             {
                 while (this.mIsThreadRunning)
                 {
@@ -244,7 +248,7 @@ namespace AgosWatchdog
                         //Console.WriteLine(diff.TotalMilliseconds);
                     }                   
                     */                    
-                    using (ManagementObjectCollection moc = oWMI.Get()) {
+                    using (ManagementObjectCollection moc = mos.Get()) {
                         // 파일 정보 리스트 순회                    
                         foreach (var fileInfo in GlobalData.fileInfoList)
                         {   
@@ -503,7 +507,7 @@ namespace AgosWatchdog
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
-            mTimer.Stop();
+            mTimer.Stop();            
             this.Text = "프로그램 종료 중...";
             stopThreadChkProc();
         }
