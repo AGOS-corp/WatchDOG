@@ -15,6 +15,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using AgosWatchdog.Models;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace AgosWatchdog
 {
@@ -38,6 +39,14 @@ namespace AgosWatchdog
             }
         }
 
+        enum EListCol {
+            name = 0,
+            pId,
+            state,
+            desc,
+            dateTimeLast
+        }
+
         //private ManagementObjectCollection oWMICollection;
         private AddProcessForm _processForm;
         //private static readonly object lockObject = new object();
@@ -46,6 +55,7 @@ namespace AgosWatchdog
         private bool mIsThreadRunning = true;
 
         private System.Windows.Forms.Timer mTimer = null;
+        private int mTestCount = 0;
 
         public MainForm()
         {
@@ -64,7 +74,8 @@ namespace AgosWatchdog
 
             if (mTimer == null) {
                 mTimer = new System.Windows.Forms.Timer();
-                mTimer.Interval = 1000;
+                //mTimer.Interval = 1000;
+                mTimer.Interval = 500;
                 mTimer.Tick += new EventHandler(onRunTimer);
                 mTimer.Start();
             }
@@ -73,6 +84,7 @@ namespace AgosWatchdog
 
         private void UpdateProcessFromConfig()
         {
+            ProcessListView.Items.Clear();
             foreach (var process in GlobalData.fileInfoList)
             {
                 string[] listViewArr =
@@ -190,13 +202,27 @@ namespace AgosWatchdog
                             f.ProcessID = Convert.ToInt32(oItem.GetPropertyValue("ProcessId").ToString());
                             if (f.ProcessID > 0) {
                                 state = ProcState.running;
-                                process = Process.GetProcessById(f.ProcessID);
+                                process = Process.GetProcessById(f.ProcessID);                                
                                 if (process != null && IsHungAppWindow(process.MainWindowHandle))
                                 {
                                     state = ProcState.hang;
                                 }
                                 isFound = true;
+                                
+                                if((process.MainWindowHandle.ToInt64() == 0) && String.IsNullOrEmpty(process.MainWindowTitle)){
+                                    //background 실행중.
+                                    Trace.WriteLine(String.Format("'{0}','{1}'", process.MainWindowHandle.ToInt64(), process.MainWindowTitle));
+                                }                                 
                             }
+                            
+                            /*
+                            Trace.WriteLine("====================================");
+                            foreach (PropertyData p in oItem.Properties) {
+                                Trace.WriteLine(String.Format("{0}:{1}", p.Name, p.Value));
+                            }
+                            Trace.WriteLine("====================================");
+                            */
+
                         }
                         oItem.Dispose();
 
@@ -296,37 +322,44 @@ namespace AgosWatchdog
 
         public void onRunTimer(Object obj, EventArgs e) {
             viewStatus();
+            //viewTest();
         }
         private void viewStatus() {
             foreach (var fileInfo in GlobalData.fileInfoList)
             {
                 if (listViewItems.TryGetValue(fileInfo.FileName, out var item))
-                {
-                    item.SubItems[0].Text = fileInfo.NickName;
-                    item.SubItems[1].Text = fileInfo.ProcessID.ToString();
-                    item.SubItems[2].Text = EnumHelper.ToDescription(fileInfo.State);
-                    item.SubItems[3].Text = fileInfo.Description;
-                    item.SubItems[4].Text = fileInfo.LastRunTime.ToString();
+                {                    
+                    item.SubItems[Convert.ToInt32(EListCol.name)].Text = fileInfo.NickName;
+                    item.SubItems[Convert.ToInt32(EListCol.pId)].Text = fileInfo.ProcessID.ToString();
+                    item.SubItems[Convert.ToInt32(EListCol.state)].Text = EnumHelper.ToDescription(fileInfo.State);
+                    item.SubItems[Convert.ToInt32(EListCol.desc)].Text = fileInfo.Description;
+                    item.SubItems[Convert.ToInt32(EListCol.dateTimeLast)].Text = fileInfo.LastRunTime.ToString();
                 }
             }
+        }
+        private void viewTest() {            
+            this.label3.Text = String.Format("{0}", mTestCount);
+            mTestCount++;
         }
 
 
         private void DeleteFileInfo(int idx)
         {
-            for (int i = 0; i < GlobalData.fileInfoList.Count; i++)
-            {
-                if (GlobalData.fileInfoList[i].FileName == ProcessListView.Items[idx].SubItems[0].Text)
+            if (idx > -1 && idx < ProcessListView.Items.Count) {
+                for (int i = 0; i < GlobalData.fileInfoList.Count; i++)
                 {
-                    GlobalData.fileInfoList.RemoveAt(i);
-                    break;
+                    if (GlobalData.fileInfoList[i].FileName == ProcessListView.Items[idx].SubItems[0].Text)
+                    {
+                        GlobalData.fileInfoList.RemoveAt(i);
+                        break;
+                    }
                 }
-            }
 
-            listViewItems.Remove(ProcessListView.Items[idx].Text);
-            ProcessListView.Items[idx].Remove();
-            // listViewItems.Remove() //ListView에서 삭제
-            ConfigProcess.WriteJson(GlobalData.fileInfoList); //Config 업데이트
+                listViewItems.Remove(ProcessListView.Items[idx].Text);
+                ProcessListView.Items[idx].Remove();
+                // listViewItems.Remove() //ListView에서 삭제
+                ConfigProcess.WriteJson(GlobalData.fileInfoList); //Config 업데이트
+            }
         }
 
 
@@ -359,10 +392,11 @@ namespace AgosWatchdog
                     if (process != null)
                     {
                         var idx = GlobalData.fileInfoList.FindIndex(v => v.FileFullName == fileInfo.FileFullName);
-                        GlobalData.fileInfoList[idx].ProcessID = process.Id; //실행되는 process의 id 업데이트
-                        GlobalData.fileInfoList[idx].LastRunTime = DateTime.Now; //실행 시키는 시간 업데이트
-                        GlobalData.fileInfoList[idx].Pause = false;
-
+                        if (idx > -1 && idx < GlobalData.fileInfoList.Count) {
+                            GlobalData.fileInfoList[idx].ProcessID = process.Id; //실행되는 process의 id 업데이트
+                            GlobalData.fileInfoList[idx].LastRunTime = DateTime.Now; //실행 시키는 시간 업데이트
+                            GlobalData.fileInfoList[idx].Pause = false;
+                        }
                         //ListView에 업데이트.
                         /*
                         this.Invoke(new MethodInvoker(() =>
@@ -388,9 +422,11 @@ namespace AgosWatchdog
             try
             {
                 Process process = Process.GetProcessById(processID);
-                process.Kill();
-
-                process.WaitForExit();
+                if (process != null)
+                {
+                    process.Kill();
+                    process.WaitForExit();
+                }                
             }
             catch (Exception ex)
             {
@@ -416,11 +452,9 @@ namespace AgosWatchdog
                     {
                         var _r = ProcessListView.SelectedItems[0];
                         var idx = ProcessListView.Items.IndexOf(_r);
-                        if (idx >= 0)
-                        {
+                        if (idx > -1 && idx < ProcessListView.Items.Count) {
                             StopProcess(Convert.ToInt32(ProcessListView.Items[idx].SubItems[1].Text));
                         }
-
                         DeleteFileInfo(ProcessListView.Items.IndexOf(ProcessListView.SelectedItems[0]));
                     }
                 }
@@ -442,9 +476,9 @@ namespace AgosWatchdog
             {
                 var r = ProcessListView.SelectedItems[0];
                 var idx = ProcessListView.Items.IndexOf(r);
-                if (idx >= 0)
+                if (idx > -1 && idx < ProcessListView.Items.Count)
                 {
-                    GlobalData.fileInfoList[idx - 1].Pause = true; //프로그램 내에서 정지를 할경우 다시 시작 하지 않게 처리!
+                    GlobalData.fileInfoList[idx].Pause = true; //프로그램 내에서 정지를 할경우 다시 시작 하지 않게 처리!
                     StopProcess(Convert.ToInt32(ProcessListView.Items[idx].SubItems[1].Text));
                     /*
                     this.Invoke(new MethodInvoker(() =>
@@ -464,12 +498,10 @@ namespace AgosWatchdog
         private void toolTip_StartProcess(object sender, EventArgs e)
         {
             var r = ProcessListView.SelectedItems[0];
-            var idx = ProcessListView.Items.IndexOf(r);
-            var fileInfoItem =
-                GlobalData.fileInfoList.Find(v => v.NickName == ProcessListView.Items[idx].SubItems[0].Text);
-
-            if (idx >= 0)
+            var idx = ProcessListView.Items.IndexOf(r);            
+            if (idx > -1 && idx < ProcessListView.Items.Count)
             {
+                var fileInfoItem = GlobalData.fileInfoList.Find(v => v.NickName == ProcessListView.Items[idx].SubItems[0].Text);
                 StartProcess(fileInfoItem);
             }
         }

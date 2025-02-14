@@ -33,12 +33,13 @@ namespace AgosWatchdog
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem("");
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("");
             this.eventLog1 = new System.Diagnostics.EventLog();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.label1 = new System.Windows.Forms.Label();
             this.Btn_AddProcess = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label3 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.ProcessListView = new System.Windows.Forms.ListView();
             this.nameHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -46,12 +47,12 @@ namespace AgosWatchdog
             this.statusHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.descriptHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.lastRuntimeHeader = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.label2 = new System.Windows.Forms.Label();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.정지ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tooltip_delete = new System.Windows.Forms.ToolStripMenuItem();
             this.tooltip_preference = new System.Windows.Forms.ToolStripMenuItem();
-            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -94,6 +95,7 @@ namespace AgosWatchdog
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 113F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 152F));
+            this.tableLayoutPanel1.Controls.Add(this.label3, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label1, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.Btn_AddProcess, 0, 2);
@@ -109,6 +111,18 @@ namespace AgosWatchdog
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(818, 422);
             this.tableLayoutPanel1.TabIndex = 2;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label3.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label3.Location = new System.Drawing.Point(669, 388);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(146, 34);
+            this.label3.TabIndex = 6;
+            this.label3.Text = "label3";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // pictureBox1
             // 
@@ -135,7 +149,7 @@ namespace AgosWatchdog
             this.ProcessListView.FullRowSelect = true;
             this.ProcessListView.HideSelection = false;
             this.ProcessListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem2});
             this.ProcessListView.Location = new System.Drawing.Point(3, 32);
             this.ProcessListView.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.ProcessListView.Name = "ProcessListView";
@@ -170,6 +184,18 @@ namespace AgosWatchdog
             // 
             this.lastRuntimeHeader.Text = "마지막 실행 시간";
             this.lastRuntimeHeader.Width = 398;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
+            this.label2.Location = new System.Drawing.Point(669, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(146, 30);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "label2";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // contextMenuStrip1
             // 
@@ -208,18 +234,6 @@ namespace AgosWatchdog
             this.tooltip_preference.Size = new System.Drawing.Size(98, 22);
             this.tooltip_preference.Text = "설정";
             this.tooltip_preference.Click += new System.EventHandler(this.tooltip_preference_Click);
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Font = new System.Drawing.Font("굴림", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(129)));
-            this.label2.Location = new System.Drawing.Point(669, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(146, 30);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "label2";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // MainForm
             // 
@@ -264,6 +278,7 @@ namespace AgosWatchdog
         private System.Windows.Forms.ToolStripMenuItem 정지ToolStripMenuItem;
         private System.Windows.Forms.ColumnHeader pidHeader;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
     }
 }
 
